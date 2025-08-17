@@ -2,7 +2,7 @@
   description = "Zen Browser";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
   outputs = { self, nixpkgs }:
@@ -88,4 +88,5 @@
       packages.${system}.zenBrowser = zenBrowser;
       defaultPackage.${system} = zenBrowser;
     };
+  nixpkgs.config.allowUnfree = true;
 }
