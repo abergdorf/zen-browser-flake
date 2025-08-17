@@ -11,6 +11,9 @@
       version = "1.14.11b";
       pkgs = import nixpkgs {
         inherit system;
+        config = {
+        allowUnfree = true;
+        };
       };
 
       runtimeLibs = with pkgs; [
@@ -88,5 +91,4 @@
       packages.${system}.zenBrowser = zenBrowser;
       defaultPackage.${system} = zenBrowser;
     };
-  nixpkgs.config.allowUnfree = true;
 }
