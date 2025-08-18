@@ -13,6 +13,7 @@
         inherit system;
         config = {
         allowUnfree = true;
+        allowUnfreePredicate = (pkg: true);
         };
       };
 
@@ -21,7 +22,7 @@
         stdenv.cc.cc fontconfig libxkbcommon zlib freetype
         gtk3 libxml2 dbus xcb-util-cursor alsa-lib libpulseaudio pango atk cairo gdk-pixbuf glib
         udev libva mesa libnotify cups pciutils
-        ffmpeg libglvnd pipewire
+        ffmpeg libglvnd pipewire fontconfig noto-fonts fontconfig.lib
       ] ++ (with pkgs.xorg; [
         libxcb libX11 libXcursor libXrandr libXi libXext libXcomposite libXdamage
         libXfixes libXScrnSaver
@@ -47,36 +48,46 @@
           tar -xf $src --strip-components=1
 
             # Create destination directories
-  mkdir -p $out/bin
-  mkdir -p $out/share/applications/
-  mkdir -p $out/share/icons/hicolor/128x128/apps/
+             mkdir -p $out/bin
+             mkdir -p $out/share/applications/
+             mkdir -p $out/share/icons/hicolor/128x128/apps/
 
-  # Install browser binaries
-  cp -r * $out/bin/
+             # Install browser binaries
+             cp -r * $out/bin/
 
-  # Copy desktop file to the build directory and then modify it
-  cp "$desktopSrc/zen.desktop" ./zen.desktop
+             # Copy desktop file to the build directory and then modify it
+             cp "$desktopSrc/zen.desktop" ./zen.desktop
 
-  substituteInPlace ./zen.desktop \
-    --replace "Exec=zen" "Exec=$out/bin/zen"
+             substituteInPlace ./zen.desktop \
+             --replace "Exec=zen" "Exec=$out/bin/zen"
 
-  # Install the modified desktop file
-  install -m644 ./zen.desktop $out/share/applications/
+             # Install the modified desktop file
+             install -m644 ./zen.desktop $out/share/applications/
 
-  # Install the icon
-  install -m644 $out/bin/browser/chrome/icons/default/default128.png $out/share/icons/hicolor/128x128/apps/zen.png
-'';
+             # Install the icon
+             install -m644 $out/bin/browser/chrome/icons/default/default128.png $out/share/icons/hicolor/128x128/apps/zen.png
+             '';
 
         dontPatchELF = true;
 
         preFixup = ''
-          patchelf --set-interpreter "$(cat ${pkgs.stdenv.cc.libc}/nix-support/dynamic-linker)" $out/bin/zen
-          wrapProgram $out/bin/zen \
-            --set MOZ_LEGACY_PROFILES 1 \
-            --set MOZ_ALLOW_DOWNGRADE 1 \
-            --set MOZ_APP_LAUNCHER zen \
-            --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeLibs}"
-        '';
+        # The original tarball contains an executable, not a launcher.
+    # So we directly patch the main executable.
+    # Set the dynamic linker for the main executable
+    patchelf --set-interpreter "$(cat ${pkgs.stdenv.cc.libc}/nix-support/dynamic-linker)" $out/bin/zen
+
+           # Set the RPATH for the executable to include all runtime libraries
+    patchelf --set-rpath "${pkgs.lib.makeLibraryPath runtimeLibs}" $out/bin/zen
+
+           # The executable needs to be wrapped so that it knows about the
+    # library paths for its own inner workings.
+    # We use wrapProgram to create a wrapper script for the executable.
+    wrapProgram $out/bin/zen \
+              --set MOZ_LEGACY_PROFILES 1 \
+          --set MOZ_ALLOW_DOWNGRADE 1 \
+          --set MOZ_APP_LAUNCHER zen \
+          --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeLibs}"
+          '';
 
         meta = with pkgs.lib; {
           description = "Zen Browser";
