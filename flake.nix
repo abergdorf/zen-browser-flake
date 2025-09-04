@@ -22,7 +22,7 @@
         stdenv.cc.cc fontconfig libxkbcommon zlib freetype
         gtk3 libxml2 dbus xcb-util-cursor alsa-lib libpulseaudio pango atk cairo gdk-pixbuf glib
         udev libva mesa libnotify cups pciutils
-        ffmpeg libglvnd pipewire fontconfig noto-fonts fontconfig.lib
+        ffmpeg libglvnd pipewire fontconfig noto-fonts fontconfig.lib harfbuzz icu
       ] ++ (with pkgs.xorg; [
         libxcb libX11 libXcursor libXrandr libXi libXext libXcomposite libXdamage
         libXfixes libXScrnSaver
