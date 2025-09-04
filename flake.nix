@@ -87,6 +87,8 @@
           --set MOZ_ALLOW_DOWNGRADE 1 \
           --set MOZ_APP_LAUNCHER zen \
           --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeLibs}"
+          --set FONTCONFIG_FILE ${pkgs.fontconfig.out}/etc/fonts/fonts.conf \
+          --set FONTCONFIG_PATH ${pkgs.fontconfig.out}/etc/fonts
           '';
 
         meta = with pkgs.lib; {
