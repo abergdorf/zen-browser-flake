@@ -74,7 +74,9 @@
         # The original tarball contains an executable, not a launcher.
     # So we directly patch the main executable.
     # Set the dynamic linker for the main executable
-    patchelf --set-interpreter "$(cat ${pkgs.stdenv.cc.libc}/nix-support/dynamic-linker)" $out/bin/zen
+    # patchelf --set-interpreter "$(cat ${pkgs.stdenv.cc.libc}/nix-support/dynamic-linker)" $out/bin/zen
+    patchelf --set-interpreter "$(cat ${pkgs.glibc}/nix-support/dynamic-linker)" $out/bin/zen
+
 
            # Set the RPATH for the executable to include all runtime libraries
     patchelf --set-rpath "${pkgs.lib.makeLibraryPath runtimeLibs}" $out/bin/zen
@@ -83,14 +85,14 @@
     # library paths for its own inner workings.
     # We use wrapProgram to create a wrapper script for the executable.
     wrapProgram $out/bin/zen \
-              --set MOZ_LEGACY_PROFILES 1 \
-          --set MOZ_ALLOW_DOWNGRADE 1 \
-          --set MOZ_APP_LAUNCHER zen \
-          --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeLibs}"
-          --set FONTCONFIG_FILE ${pkgs.fontconfig.out}/etc/fonts/fonts.conf \
-          --set FONTCONFIG_PATH ${pkgs.fontconfig.out}/etc/fonts
-          '';
-
+    --set MOZ_LEGACY_PROFILES 1 \
+    --set MOZ_ALLOW_DOWNGRADE 1 \
+    --set MOZ_APP_LAUNCHER zen \
+    --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeLibs}" \
+    --set FONTCONFIG_FILE "${pkgs.fontconfig.out}/etc/fonts/fonts.conf" \
+    --set FONTCONFIG_PATH "${pkgs.fontconfig.out}/etc/fonts"
+'';
+    
         meta = with pkgs.lib; {
           description = "Zen Browser";
           homepage = "https://zenbrowser.com/";
