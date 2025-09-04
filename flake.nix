@@ -22,7 +22,9 @@
         stdenv.cc.cc fontconfig libxkbcommon zlib freetype
         gtk3 libxml2 dbus xcb-util-cursor alsa-lib libpulseaudio pango atk cairo gdk-pixbuf glib
         udev libva mesa libnotify cups pciutils
-        ffmpeg libglvnd pipewire fontconfig noto-fonts fontconfig.lib harfbuzz icu
+        ffmpeg libglvnd pipewire fontconfig noto-fonts fontconfig.lib harfbuzz icu libthai fribidi
+        gnome.gtk gtk3 gnome.adwaita-icon-theme gnome-themes-extra
+
       ] ++ (with pkgs.xorg; [
         libxcb libX11 libXcursor libXrandr libXi libXext libXcomposite libXdamage
         libXfixes libXScrnSaver
@@ -91,6 +93,8 @@
     --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath runtimeLibs}" \
     --set FONTCONFIG_FILE "${pkgs.fontconfig.out}/etc/fonts/fonts.conf" \
     --set FONTCONFIG_PATH "${pkgs.fontconfig.out}/etc/fonts"
+    --set GTK_THEME Adwaita \
+    --set XDG_DATA_DIRS "$XDG_DATA_DIRS:${pkgs.gnome.adwaita-icon-theme}/share:${pkgs.gnome-themes-extra}/share"
 '';
     
         meta = with pkgs.lib; {
