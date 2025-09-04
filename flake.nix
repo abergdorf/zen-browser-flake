@@ -94,7 +94,7 @@
     --set FONTCONFIG_FILE "${pkgs.fontconfig.out}/etc/fonts/fonts.conf" \
     --set FONTCONFIG_PATH "${pkgs.fontconfig.out}/etc/fonts"
     --set GTK_THEME Adwaita \
-    --set XDG_DATA_DIRS "$XDG_DATA_DIRS:${pkgs.gnome.adwaita-icon-theme}/share:${pkgs.gnome-themes-extra}/share"
+    --set XDG_DATA_DIRS "$XDG_DATA_DIRS:${pkgs.adwaita-icon-theme}/share:${pkgs.gnome-themes-extra}/share"
 '';
     
         meta = with pkgs.lib; {
