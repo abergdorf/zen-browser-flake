@@ -61,7 +61,7 @@
              cp "$desktopSrc/zen.desktop" ./zen.desktop
 
              substituteInPlace ./zen.desktop \
-             --replace "Exec=zen" "Exec=$out/bin/zen"
+             --replace-{fail,warn,quiet} "Exec=zen" "Exec=$out/bin/zen"
 
              # Install the modified desktop file
              install -m644 ./zen.desktop $out/share/applications/
